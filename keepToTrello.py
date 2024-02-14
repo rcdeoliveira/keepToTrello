@@ -3,16 +3,16 @@ import os
 from trello import TrelloApi
 
 username = os.getenv('GUSERNAME')
-password = os.getenv('GPASSWORD')
+mtoken = os.getenv('GMTOKEN')
 noteId = os.getenv('GNOTEID')
 trelloApiToken = os.getenv('TAPITOKEN')
 trelloApikey = os.getenv('TAPIKEY')
-trelloBoardId = os.getenv('TBOARDID')
+trelloListId = os.getenv('TLISTID')
 
 
 # Google kepp connections
 keep = gkeepapi.Keep()
-keep.login(username, password)
+keep.resume(username, mtoken, sync=True)
 
 
 # Trello connection
@@ -21,7 +21,6 @@ trello.set_token(trelloApiToken)
 
 # Get note
 note = keep.get(noteId)
-items = note.text.replace('☐ ', '')
 
 # No content? Exit
 if len(note.items) == 0:
@@ -29,7 +28,7 @@ if len(note.items) == 0:
 else:
     for index in range(len(note.items)):
         task = note.items.pop()
-        newCard = trello.cards.new(task.text, idList=trelloBoardId)
+        newCard = trello.cards.new(task.text, idList=trelloListId)
         task.delete()
 
     keep.sync()
